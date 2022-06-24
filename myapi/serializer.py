@@ -1,3 +1,4 @@
+from itertools import product
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
@@ -115,6 +116,14 @@ class ProductSerializer(serializers.ModelSerializer):
     class Meta:
         model = Product
         fields = '__all__'
+
+
+class CategoryDetailSerializer(serializers.ModelSerializer):
+    products = ProductSerializer(many=True)
+
+    class Meta:
+        model = Category
+        fields = ['id', 'img', 'name', 'enable', 'detail', 'products']
 
 
 class ProductDetailSerializer(serializers.ModelSerializer):

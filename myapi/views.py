@@ -1,19 +1,12 @@
-from itertools import product
-import json
-from webbrowser import get
-from django.shortcuts import render, get_object_or_404
 from django.contrib.auth.models import User
 
-from rest_framework import viewsets, permissions, generics, mixins, status
+from rest_framework import permissions, generics, mixins, status
 from rest_framework.response import Response
-from rest_framework.views import APIView
-from rest_framework.exceptions import NotFound
-from rest_framework.authtoken.models import Token
 
 from rest_framework_simplejwt.views import TokenObtainPairView
 from rest_framework_simplejwt.tokens import RefreshToken
 
-from .pagination import CustomPagination
+# from .pagination import CustomPagination
 from .serializer import *
 from .models import Category
 
@@ -22,10 +15,11 @@ from .models import Category
 
 
 class RespondData():
-    def __init__(self, user=None, **args):
+    def __init__(self, user=None, *args, **kwargs):
+
         self.respond = {
-            'msg': args.get('msg', 'ดึงข้อมูลสำเร็จ'),
-            'data':  args.get('data', [])
+            'msg': kwargs.get('msg', 'ดึงข้อมูลสำเร็จ'),
+            'data':  kwargs.get('data', [])
 
         }
 
@@ -82,7 +76,7 @@ class CategoryGenericsView(generics.GenericAPIView, mixins.ListModelMixin):
 
 class CategoryDetail(generics.RetrieveAPIView):
     queryset = Category.objects.all()
-    serializer_class = CategorySerializer
+    serializer_class = CategoryDetailSerializer
 
     def get(self, request, *args, **kwargs):
         obj = self.get_object()
@@ -96,7 +90,7 @@ class ProductListAPIView(generics.ListAPIView):
     queryset = Product.objects.all()
     serializer_class = ProductSerializer
     filterset_fields = ['enable']
-    pagination_class = CustomPagination
+    # pagination_class = CustomPagination
 
     def __init__(self, *args, **kwargs):
         self.response_data = RespondData().respond
@@ -109,13 +103,7 @@ class ProductListAPIView(generics.ListAPIView):
         if not data:
             self.response_data['message'] = 'List Empty'
         self.response_data['data'] = data
-        # self.response_data['status'] = True
-
         return Response(self.response_data, status=status.HTTP_200_OK)
-
-    # def get_queryset(self, request, *args, **kwargs):
-
-    #     return super().get_queryset()
 
 
 class ProductDetail(generics.RetrieveAPIView):

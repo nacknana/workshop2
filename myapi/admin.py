@@ -6,7 +6,7 @@ from .models import Product, Category, Cart, Invoice, InvoiceItem, ImgsProduct
 
 class CategoryAdmin(admin.ModelAdmin):
     model = Category
-    list_display = ['name', 'detail', 'enable', 'show_image']
+    list_display = ['id', 'name', 'detail', 'enable', 'show_image']
 
 
 class ProductImageAdmin(admin.StackedInline):

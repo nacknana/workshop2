@@ -26,7 +26,7 @@ class Category(models.Model):
 
 
 class Product(models.Model):
-    category = models.ForeignKey(Category, default=None,
+    category = models.ForeignKey(Category, default=None, related_name='products',
                                  blank=True, null=True, on_delete=models.CASCADE)
     name = models.CharField(max_length=255)
     price = models.FloatField(default=0)
