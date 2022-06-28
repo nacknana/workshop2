@@ -267,3 +267,25 @@ class CartDestroy(generics.DestroyAPIView):
         }, status=status.HTTP_200_OK)
 
         # super().destroy(request, *args, **kwargs)
+
+
+class ContactCreate(generics.CreateAPIView):
+    serializer_class = ContactSerializer
+
+    def post(self, request, *args, **kwargs):
+        serializer = self.get_serializer(data=request.data)
+        print(request.data)
+        if serializer.is_valid():
+            print('valid')
+            return Response({'msg': 'ส่งข้อความสำเร็จ'}, status=status.HTTP_200_OK)
+        return Response({'msg': 'ส่งข้อความไม่สำเร็จ'})
+
+
+class InvoiceCreate(generics.CreateAPIView):
+    serializer_class = InvoiceSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def post(self, request, *args, **kwargs):
+        user = request.user
+        queryset = Cart.objects.filter()
+        serializer = self.get_serializer()

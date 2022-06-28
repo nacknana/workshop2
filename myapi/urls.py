@@ -21,4 +21,7 @@ urlpatterns = [
     path('cart/<int:pk>/', CartUpdate.as_view(), name='cart-update'),
     path('cart/<int:cart_id>/<int:product_id>/',
          CartDestroy.as_view(), name='cart-destroy'),
+
+    # contact
+    path('contact/', ContactCreate.as_view(), name='contact'),
 ]

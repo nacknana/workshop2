@@ -1,6 +1,7 @@
 from django.db import models
 from django.utils.html import format_html
 from django.contrib.auth.models import User
+from versatileimagefield.fields import VersatileImageField, PPOIField
 
 
 # Create your models here.
@@ -8,7 +9,9 @@ from django.contrib.auth.models import User
 
 class Category(models.Model):
     name = models.CharField(max_length=250)
-    img = models.ImageField(upload_to='Categories', null=True, blank=True)
+    img = VersatileImageField(
+        'Headshot', upload_to='Products', null=True, blank=True, ppoi_field='headshot_ppoi')
+    headshot_ppoi = PPOIField()
     detail = models.TextField(null=True, blank=True, max_length=255)
     enable = models.BooleanField(default=True)
 
@@ -31,7 +34,9 @@ class Product(models.Model):
     name = models.CharField(max_length=255)
     price = models.FloatField(default=0)
     detail = models.TextField(null=True, blank=True, max_length=255)
-    img = models.ImageField(upload_to='product')
+    img = VersatileImageField(
+        'Headshot', upload_to='Products', null=True, blank=True, ppoi_field='headshot_ppoi')
+    headshot_ppoi = PPOIField()
     enable = models.BooleanField(default=True)
 
     def show_image(self):
@@ -50,7 +55,10 @@ class Product(models.Model):
 class ImgsProduct(models.Model):
     product = models.ForeignKey(Product, default=None, related_name='imgs_product',
                                 blank=True, null=True, on_delete=models.CASCADE)
-    img = models.ImageField(upload_to='Product', null=True, blank=True)
+    # img = models.ImageField(upload_to='Products', null=True, blank=True)
+    img = VersatileImageField(
+        'Headshot', upload_to='Products', null=True, blank=True, ppoi_field='headshot_ppoi')
+    headshot_ppoi = PPOIField()
 
     class Meta:
         verbose_name = 'img'
@@ -104,7 +112,7 @@ class InvoiceItem(models.Model):
     product = models.ForeignKey(
         Product, default=None, blank=True, null=True, on_delete=models.CASCADE)
     invoice = models.ForeignKey(
-        Invoice, default=None, blank=True, null=True, on_delete=models.CASCADE)
+        Invoice, default=None, blank=True, null=True, related_name='invoice_items', on_delete=models.CASCADE)
     created = models.DateTimeField(auto_now_add=True)
     quantity = models.IntegerField(default=0)
     total = models.IntegerField(default=0)
@@ -114,3 +122,25 @@ class InvoiceItem(models.Model):
 
     class Meta:
         verbose_name_plural = 'InvoiceItem'
+
+
+status_contact_choice = (
+    ('unread', 'ยังไม่ได้อ่าน'),
+    ('readed', 'อ่านแล้ว'),
+)
+
+
+class Contact(models.Model):
+    first_name = models.CharField(max_length=255)
+    last_name = models.CharField(max_length=255)
+    email = models.CharField(max_length=254)
+    detail = models.TextField(null=True, blank=True, max_length=255)
+    created = models.DateTimeField(auto_now_add=True)
+    status = models.CharField(
+        max_length=20, choices=status_contact_choice, default='unread')
+
+    def __str__(self):
+        return self.first_name
+
+    class Meta:
+        verbose_name_plural = 'Contact'

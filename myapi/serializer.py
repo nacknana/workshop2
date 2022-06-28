@@ -1,14 +1,16 @@
+from dataclasses import field
 from itertools import product
 from rest_framework import serializers
 from rest_framework_simplejwt.serializers import TokenObtainPairSerializer, TokenRefreshSerializer
 from rest_framework_simplejwt.tokens import RefreshToken
 from rest_framework.exceptions import ParseError, ValidationError
+from versatileimagefield.serializers import VersatileImageFieldSerializer
 
 from django.contrib.auth.models import User
 
 from datetime import datetime
 
-from .models import Cart, Category, ImgsProduct, Product
+from .models import Cart, Category, Contact, ImgsProduct, Invoice, Product
 
 
 def get_current_date(sec):
@@ -105,6 +107,10 @@ class CategorySerializer(serializers.ModelSerializer):
 
 
 class ProductImgs(serializers.ModelSerializer):
+    img = VersatileImageFieldSerializer(
+        sizes='headshot'
+    )
+
     class Meta:
         model = ImgsProduct
         fields = '__all__'
@@ -128,11 +134,14 @@ class CategoryDetailSerializer(serializers.ModelSerializer):
 
 class ProductDetailSerializer(serializers.ModelSerializer):
     imgs_product = ProductImgs(many=True)
+    img = VersatileImageFieldSerializer(
+        sizes='headshot'
+    )
 
     class Meta:
         model = Product
         fields = ['id', 'category', 'name', 'price',
-                  'img', 'enable', 'imgs_product']
+                  'img', 'enable', 'detail', 'imgs_product']
 
     # def get_category(self, obj):
     #     return obj.category.name
@@ -185,3 +194,36 @@ class CartListSerializer(serializers.ModelSerializer):
     class Meta:
         model = Cart
         fields = ['id', 'product',  'quantity',  'total']
+
+
+class ContactSerializer(serializers.ModelSerializer):
+    firs_tname = serializers.CharField(max_length=20, error_messages={
+        "blank": "ระบุจำนวนสินค้า", 'write_only': True
+    })
+    email = serializers.CharField(max_length=255, error_messages={
+        "blank": "ระบุจำนวนสินค้า", 'write_only': True
+    })
+
+    def validate_firs_tname(self, firs_tname):
+        print('validate_firs_tname')
+        if firs_tname == 'admin':
+            print('is Admin')
+            raise ValidationError('54135')
+        return ValidationError('54135')
+
+    def validate_email(self, attrs):
+        print('validate_email')
+        if attrs == 'admin':
+            raise ValidationError('Can\'t use name admin')
+        return attrs
+
+    class Meta:
+        model = Contact
+        fields = ['firs_tname', 'last_name', 'email', 'detail']
+
+
+class InvoiceSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Invoice
+        fields = '__all__'
