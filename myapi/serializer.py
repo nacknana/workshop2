@@ -68,7 +68,7 @@ class RegisterSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = User
-        fields = ('id', 'username', 'password', 'first_name',  'last_name')
+        fields = ('username', 'password', 'first_name',  'last_name')
 
     def validate_password(self, password):
         if password is None:
@@ -148,6 +148,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
 
 
 class CartSerializer(serializers.ModelSerializer):
+
     product = serializers.IntegerField(error_messages={
         "blank": 'ระบุรหัสสินค้า', 'write_only': True
     })
@@ -191,6 +192,8 @@ class CartUpdateSerializer(serializers.ModelSerializer):
 
 
 class CartListSerializer(serializers.ModelSerializer):
+    product = ProductDetailSerializer()
+
     class Meta:
         model = Cart
         fields = ['id', 'product',  'quantity',  'total']

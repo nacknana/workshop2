@@ -70,7 +70,7 @@ class ImgsProduct(models.Model):
 
 class Cart(models.Model):
     product = models.ForeignKey(
-        Product, default=None, blank=True, null=True, on_delete=models.CASCADE)
+        Product, default=None, blank=True, related_name='product', null=True, on_delete=models.CASCADE)
     user = models.ForeignKey(
         User,
         on_delete=models.CASCADE)

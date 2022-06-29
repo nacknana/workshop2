@@ -79,6 +79,7 @@ class CategoryDetail(generics.RetrieveAPIView):
     serializer_class = CategoryDetailSerializer
 
     def get(self, request, *args, **kwargs):
+
         obj = self.get_object()
         data = self.get_serializer(obj)
         return Response({
@@ -128,7 +129,7 @@ class CartList(generics.ListCreateAPIView):
         queryset = self.get_queryset()
         serialize = CartListSerializer(queryset, many=True)
         # print(queryset)
-        print(serialize.data)
+        # print(serialize.data)
         res = RespondData().respond
         res['data'] = serialize.data
         # return Response({
@@ -274,9 +275,9 @@ class ContactCreate(generics.CreateAPIView):
 
     def post(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
-        print(request.data)
+        # print(request.data)
         if serializer.is_valid():
-            print('valid')
+            # print('valid')
             return Response({'msg': 'ส่งข้อความสำเร็จ'}, status=status.HTTP_200_OK)
         return Response({'msg': 'ส่งข้อความไม่สำเร็จ'})
 
