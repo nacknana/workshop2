@@ -1,3 +1,4 @@
+from cgitb import enable
 from django.contrib.auth.models import User
 
 from rest_framework import permissions, generics, mixins, status
@@ -15,6 +16,7 @@ from .models import Category
 
 
 class RespondData():
+
     def __init__(self, user=None, *args, **kwargs):
 
         self.respond = {
@@ -93,11 +95,35 @@ class ProductListAPIView(generics.ListAPIView):
     filterset_fields = ['enable']
     # pagination_class = CustomPagination
 
+    def get_queryset(self):
+        queryset = Product.objects.filter(enable=True)
+        sort_by = self.request.query_params.get('sort', 'asc')
+        # get params
+        category = self.request.query_params.get('category', None)
+        search = self.request.query_params.get('search', None)
+
+    #     #sort
+        if sort_by == 'desc':
+            queryset = queryset.order_by('-price')
+        else:
+            queryset = queryset.order_by('price')
+        # filter in
+        if category:
+            queryset = queryset.filter(category=category)
+
+        if search:
+            queryset = queryset.filter(name__contains=search)
+
+        return queryset
+
     def __init__(self, *args, **kwargs):
         self.response_data = RespondData().respond
         super(ProductListAPIView, self).__init__(*args, **kwargs)
 
     def get(self, request, *args, **kwargs):
+        # sort
+        # sort_by = self.request.query_params.get('sort', 'asc')
+
         queryset = self.get_queryset()
         data = self.get_serializer(queryset, many=True).data
 
